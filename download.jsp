@@ -6,7 +6,7 @@ if(user == null) {
   response.sendRedirect("login.html");
   return;
 }
-Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ebook", "root", "sidd1611");
+Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ebook", "root", "###");
 PreparedStatement ps = con.prepareStatement("SELECT file_path FROM ebooks WHERE ebook_id = ?");
 ps.setInt(1, ebookId);
 ResultSet rs = ps.executeQuery();
