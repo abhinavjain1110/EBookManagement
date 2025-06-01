@@ -1,4 +1,4 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="java.sql.*, java.util.*, java.io.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
@@ -26,7 +26,7 @@
             margin-bottom: 25px;
             color: #333;
         }
-        input[type="text"],
+        input[type="email"],
         input[type="password"] {
             width: 100%;
             padding: 12px 15px;
@@ -57,7 +57,7 @@
 <body>
 
 <div class="login-container">
-    <%
+<%
     String email = request.getParameter("email");
     String password = request.getParameter("password");
 
@@ -67,9 +67,17 @@
         ResultSet rs = null;
 
         try {
+            // Load DB credentials from properties file
+            Properties props = new Properties();
+            InputStream input = application.getResourceAsStream("/WEB-INF/db.properties");
+            props.load(input);
+
+            String dbUrl = props.getProperty("db.url");
+            String dbUser = props.getProperty("db.username");
+            String dbPass = props.getProperty("db.password");
+
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/ebook", "root", "sidd1611");
+            con = DriverManager.getConnection(dbUrl, dbUser, dbPass);
 
             ps = con.prepareStatement("SELECT * FROM users WHERE email=? AND password=?");
             ps.setString(1, email);
@@ -93,11 +101,11 @@
             try { if (con != null) con.close(); } catch (Exception e) {}
         }
     }
-    %>
+%>
 
     <h2>Login</h2>
     <form method="post" action="login.jsp">
-        <input type="text" name="email" placeholder="Email" required><br>
+        <input type="email" name="email" placeholder="Email" required><br>
         <input type="password" name="password" placeholder="Password" required><br>
         <input type="submit" value="Login">
     </form>

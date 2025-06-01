@@ -1,81 +1,7 @@
-<!-- <%@ page import="java.sql.*" %>
-<%
-String user = (String)session.getAttribute("user");
-if(user == null) {
-    response.sendRedirect("login.jsp");
-    return;
-}
-%>
-<%@ page import="java.util.*, java.io.*, java.sql.*" %>
-<%
-Properties props = new Properties();
-InputStream input = application.getResourceAsStream("/WEB-INF/db.properties");
-props.load(input);
-
-String url = props.getProperty("db.url");
-String username = props.getProperty("db.username");
-String password = props.getProperty("db.password");
-
-Connection con = DriverManager.getConnection(url, username, password);
-%>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>eBook List</title>
-    <link rel="stylesheet" type="text/css" href="css/ebook.css">
-</head>
-<body>
-
-<h2>Available eBooks</h2>
-
-<table>
-    <tr>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Download</th>
-    </tr>
-<%
-Connection con = null;
-Statement stmt = null;
-ResultSet rs = null;
-
-try {
-    Class.forName("com.mysql.cj.jdbc.Driver");
-    con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ebook", "root", "sidd1611");
-    stmt = con.createStatement();
-    rs = stmt.executeQuery("SELECT * FROM ebooks");
-
-    while(rs.next()) {
-%>
-    <tr>
-        <td><%= rs.getString("title") %></td>
-        <td><%= rs.getString("author") %></td>
-        <td><a href="<%= rs.getString("file_path") %>" target="_blank">Download</a></td>
-    </tr>
-<%
-    }
-} catch(Exception e) {
-%>
-    <tr><td colspan="3" style="color: red;">Error: <%= e.getMessage() %></td></tr>
-<%
-} finally {
-    try { if (rs != null) rs.close(); } catch(Exception e) {}
-    try { if (stmt != null) stmt.close(); } catch(Exception e) {}
-    try { if (con != null) con.close(); } catch(Exception e) {}
-}
-%>
-</table>
-
-<a class="back-link" href="dashboard.jsp">← Back to Dashboard</a>
-
-</body>
-</html>
- -->
 <%@ page import="java.sql.*, java.util.*, java.io.*" %>
 <%
-String user = (String)session.getAttribute("user");
-if(user == null) {
+String user = (String) session.getAttribute("user");
+if (user == null) {
     response.sendRedirect("login.jsp");
     return;
 }
@@ -85,8 +11,8 @@ InputStream input = application.getResourceAsStream("/WEB-INF/db.properties");
 props.load(input);
 
 String url = props.getProperty("db.url");
-String username = props.getProperty("db.username");
-String password = props.getProperty("db.password");
+String dbUser = props.getProperty("db.username");
+String dbPass = props.getProperty("db.password");
 
 Connection con = null;
 Statement stmt = null;
@@ -96,48 +22,107 @@ ResultSet rs = null;
 <!DOCTYPE html>
 <html>
 <head>
-    <title>eBook List</title>
-    <link rel="stylesheet" type="text/css" href="css/ebook.css">
+    <title>Available eBooks | LibroVault</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6fa;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h3 {
+            margin: 0 0 10px;
+            color: #007BFF;
+        }
+        .card p {
+            color: #555;
+            font-size: 14px;
+        }
+        .download-btn {
+            margin-top: 15px;
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .download-btn:hover {
+            background-color: #0056b3;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #007BFF;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Available eBooks</h2>
+<h2><i class="fas fa-book"></i> Available eBooks</h2>
 
-<table>
-    <tr>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Download</th>
-    </tr>
+<div class="card-container">
 <%
 try {
     Class.forName("com.mysql.cj.jdbc.Driver");
-    con = DriverManager.getConnection(url, username, password);
+    con = DriverManager.getConnection(url, dbUser, dbPass);
     stmt = con.createStatement();
     rs = stmt.executeQuery("SELECT * FROM ebooks");
 
-    while(rs.next()) {
+    while (rs.next()) {
+        String title = rs.getString("title");
+        String author = rs.getString("author");
+        String filePath = rs.getString("file_path");
 %>
-    <tr>
-        <td><%= rs.getString("title") %></td>
-        <td><%= rs.getString("author") %></td>
-        <td><a href="<%= rs.getString("file_path") %>" target="_blank">Download</a></td>
-    </tr>
+    <div class="card">
+        <h3><%= title %></h3>
+        <p><strong>Author:</strong> <%= author %></p>
+        <a class="download-btn" href="<%= filePath %>" target="_blank"><i class="fas fa-download"></i> Download</a>
+    </div>
 <%
     }
-} catch(Exception e) {
+} catch (Exception e) {
 %>
-    <tr><td colspan="3" style="color: red;">Error: <%= e.getMessage() %></td></tr>
+    <p style="color: red; text-align: center;">Error: <%= e.getMessage() %></p>
 <%
 } finally {
-    try { if (rs != null) rs.close(); } catch(Exception e) {}
-    try { if (stmt != null) stmt.close(); } catch(Exception e) {}
-    try { if (con != null) con.close(); } catch(Exception e) {}
+    try { if (rs != null) rs.close(); } catch (Exception e) {}
+    try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+    try { if (con != null) con.close(); } catch (Exception e) {}
 }
 %>
-</table>
+</div>
 
-<a class="back-link" href="dashboard.jsp">Back to Dashboard</a>
+<a class="back-link" href="dashboard.jsp">← Back to Dashboard</a>
 
 </body>
 </html>

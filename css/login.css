@@ -1,6 +1,8 @@
 body {
       font-family: 'Segoe UI', sans-serif;
-      background: #e8f0fe;
+      background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f') no-repeat center center fixed;
+      background-size: cover;
+
       display: flex;
       justify-content: center;
       align-items: center;
@@ -8,14 +10,17 @@ body {
       margin: 0;
     }
     .login-box {
-      background: white;
-      padding: 40px 50px;
+      background: #fefae0;
+      width: 100vh;
+      padding: 50px 80px;
       border-radius: 12px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       text-align: center;
+      font-weight: bolder;
+      font-size: x-large;
     }
     h2 {
-      color: #1e90ff;
+      color: #000814;
       margin-bottom: 20px;
     }
     input[type="text"], input[type="password"] {
@@ -27,8 +32,9 @@ body {
       font-size: 14px;
     }
     input[type="submit"] {
-      background-color: #1e90ff;
+      background-color: #000814;
       color: white;
+      font-weight: bold;
       padding: 12px 24px;
       border: none;
       border-radius: 6px;
@@ -37,5 +43,6 @@ body {
       transition: background 0.3s;
     }
     input[type="submit"]:hover {
-      background-color: #0d6efd;
+      background-color: whitesmoke;
+      color: #000814;
     }
